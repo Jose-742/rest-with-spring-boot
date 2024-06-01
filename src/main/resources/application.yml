@@ -1,1 +1,13 @@
-spring.application.name=rest-with-spring-boot
+spring:
+  application:
+    name: rest-with-spring-boot
+  datasource:
+    url: jdbc:postgresql://localhost:5432/rest_with_spring
+    username: usuario
+    password: senha
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
