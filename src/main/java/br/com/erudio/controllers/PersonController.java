@@ -4,7 +4,7 @@ package br.com.erudio.controllers;
 import br.com.erudio.data.vo.v1.PersonVO;
 import br.com.erudio.services.PersonServices;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import br.com.erudio.util.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,27 +17,27 @@ public class PersonController {
     @Autowired
     private PersonServices personServices;
 
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @GetMapping(produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
     public List<PersonVO> findAll() {
         return personServices.findAll();
     }
 
     @GetMapping(value = "/{id}",
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
     public PersonVO findById(@PathVariable("id") Long id) {
         return personServices.findById(id);
     }
 
     @PostMapping(
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_YML},
+            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_YML})
     public PersonVO create(@RequestBody PersonVO PersonVO) {
         return personServices.create(PersonVO);
     }
 
     @PutMapping(
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_YML},
+            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML,  MediaType.APPLICATION_YML})
     public PersonVO update(@RequestBody PersonVO PersonVO) {
         return personServices.update(PersonVO);
     }
