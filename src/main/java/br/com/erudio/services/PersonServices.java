@@ -2,6 +2,7 @@ package br.com.erudio.services;
 
 import br.com.erudio.controllers.PersonController;
 import br.com.erudio.data.vo.v1.PersonVO;
+import br.com.erudio.exceptions.RequiredObjectIsNullException;
 import br.com.erudio.exceptions.ResourceNotFoundException;
 
 import br.com.erudio.mapper.DozerMapper;
@@ -37,23 +38,29 @@ public class PersonServices {
         return vo;
     }
 
-    public PersonVO create(PersonVO PersonVO) {
+    public PersonVO create(PersonVO person) {
+
+        if (person == null) throw new RequiredObjectIsNullException();
+
         log.info("Creating new PersonVO!");
-        var entity = DozerMapper.parseObject(PersonVO, Person.class);
+        var entity = DozerMapper.parseObject(person, Person.class);
         var vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
     }
 
-    public PersonVO update(PersonVO PersonVO) {
+    public PersonVO update(PersonVO person) {
+
+        if (person == null) throw new RequiredObjectIsNullException();
+
         log.info("Updating new PersonVO!");
-        var entity = personRepository.findById(PersonVO.getKey())
+        var entity = personRepository.findById(person.getKey())
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
 
-        entity.setFirstName(PersonVO.getFirstName());
-        entity.setLastName(PersonVO.getLastName());
-        entity.setAddress(PersonVO.getAddress());
-        entity.setGender(PersonVO.getGender());
+        entity.setFirstName(person.getFirstName());
+        entity.setLastName(person.getLastName());
+        entity.setAddress(person.getAddress());
+        entity.setGender(person.getGender());
 
         var vo = DozerMapper.parseObject(personRepository.save(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
