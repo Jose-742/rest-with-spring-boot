@@ -2,6 +2,7 @@ package br.com.erudio.unittests.mockito.services;
 
 import br.com.erudio.data.vo.v1.PersonVO;
 import br.com.erudio.exceptions.RequiredObjectIsNullException;
+import br.com.erudio.model.Book;
 import br.com.erudio.model.Person;
 import br.com.erudio.repositories.PersonRepository;
 import br.com.erudio.services.PersonServices;
@@ -62,10 +63,13 @@ public class PersonServicesTest {
         Person entity = input.mockEntity(1);
         entity.setId(1L);
 
+        Person persisted = entity;
+        persisted.setId(1L);
+
         PersonVO vo = input.mockVO(1);
         vo.setKey(1L);
 
-        when(repository.save(any(Person.class))).thenReturn(entity);
+        when(repository.save(entity)).thenReturn(persisted);
 
         var result = service.create(vo);
         assertNotNull(result);
