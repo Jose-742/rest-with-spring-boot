@@ -1,0 +1,17 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: rest-with-spring-boot
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      #ddl-auto: update
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
+springdoc:
+  pathsToMatch: /api/**/v1/**
+  swagger-ui:
+    use-root-path: true
