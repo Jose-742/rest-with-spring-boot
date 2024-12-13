@@ -1,4 +1,4 @@
-package br.com.erudio.securityJwt;
+package br.com.erudio.security.Jwt;
 
 import br.com.erudio.data.vo.v1.security.TokenVO;
 import br.com.erudio.exceptions.InvalidJwtAuthenticationException;
@@ -94,7 +94,7 @@ public class JwtTokenProvider {
         return null;
     }
 
-    public boolean validateToken(String token, UserDetails userDetails) {
+    public boolean validateToken(String token) {
         DecodedJWT decodedJWT = decodedToken(token);
         try{
             return !decodedJWT.getExpiresAt().before(new Date());
