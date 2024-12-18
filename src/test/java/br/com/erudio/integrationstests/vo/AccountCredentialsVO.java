@@ -1,15 +1,15 @@
 package br.com.erudio.integrationstests.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Getter @Setter
 @EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
+@XmlRootElement
 public class AccountCredentialsVO implements Serializable {
 
     private String username;
