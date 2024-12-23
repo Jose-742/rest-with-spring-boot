@@ -8,10 +8,7 @@ import br.com.erudio.integrationstests.testcontainers.AbstractIntegrationsTest;
 import br.com.erudio.integrationstests.vo.AccountCredentialsVO;
 import br.com.erudio.integrationstests.vo.PersonVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.EncoderConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -27,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -168,6 +166,41 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 
 	@Test
 	@Order(3)
+	public void testDisablePersonById() throws JsonMappingException, JsonProcessingException {
+
+		var persistedPerson = given().spec(specification)
+				.contentType(TestConfigs.CONTENT_TYPE_YML)
+				.accept(TestConfigs.CONTENT_TYPE_YML)
+				.pathParam("id", person.getId())
+				.when()
+				.patch("{id}")
+				.then()
+				.statusCode(200)
+				.extract()
+				.body()
+				.as(PersonVO.class, objectMapper);
+
+		person = persistedPerson;
+
+		assertNotNull(persistedPerson);
+
+		assertNotNull(persistedPerson.getId());
+		assertNotNull(persistedPerson.getFirstName());
+		assertNotNull(persistedPerson.getLastName());
+		assertNotNull(persistedPerson.getAddress());
+		assertNotNull(persistedPerson.getGender());
+		assertFalse(persistedPerson.getEnabled());
+
+		assertEquals(person.getId(), persistedPerson.getId());
+
+		assertEquals("Nelson", persistedPerson.getFirstName());
+		assertEquals("Piquet Souto Maior", persistedPerson.getLastName());
+		assertEquals("Brasília - DF - Brasil", persistedPerson.getAddress());
+		assertEquals("Male", persistedPerson.getGender());
+	}
+
+	@Test
+	@Order(4)
 	public void testFindById() throws JsonMappingException, JsonProcessingException {
 		mockPerson();
 
@@ -202,7 +235,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
 	public void testDelete() throws JsonMappingException, JsonProcessingException {
 
 		given().spec(specification)
@@ -223,7 +256,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	public void testFindAll() throws JsonMappingException, JsonProcessingException {
 
 		var content = given().spec(specification)
@@ -254,6 +287,8 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 		assertNotNull(foundPersonOne.getAddress());
 		assertNotNull(foundPersonOne.getGender());
 
+		assertTrue(foundPersonOne.getEnabled());
+
 		assertEquals(1, foundPersonOne.getId());
 
 		assertEquals("Jose Natal", foundPersonOne.getFirstName());
@@ -269,6 +304,8 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 		assertNotNull(foundPersonTre.getAddress());
 		assertNotNull(foundPersonTre.getGender());
 
+		assertTrue(foundPersonTre.getEnabled());
+
 		assertEquals(3, foundPersonTre.getId());
 
 		assertEquals("Maria Clara", foundPersonTre.getFirstName());
@@ -279,7 +316,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 
 
 	@Test
-	@Order(6)
+	@Order(7)
 	public void testFindAllWithoutToken() throws JsonMappingException, JsonProcessingException {
 
 		RequestSpecification specificationWithoutToken = new RequestSpecBuilder()
@@ -310,5 +347,6 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 		person.setLastName("Piquet");
 		person.setAddress("Brasília - DF - Brasil");
 		person.setGender("Male");
+		person.setEnabled(true);
 	}
 }
