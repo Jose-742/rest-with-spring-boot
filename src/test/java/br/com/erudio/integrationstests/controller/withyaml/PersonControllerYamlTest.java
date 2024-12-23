@@ -169,6 +169,13 @@ public class PersonControllerYamlTest extends AbstractIntegrationsTest {
 	public void testDisablePersonById() throws JsonMappingException, JsonProcessingException {
 
 		var persistedPerson = given().spec(specification)
+				.config(
+						RestAssuredConfig
+								.config()
+								.encoderConfig(EncoderConfig.encoderConfig()
+										.encodeContentTypeAs(
+												TestConfigs.CONTENT_TYPE_YML,
+												ContentType.TEXT)))
 				.contentType(TestConfigs.CONTENT_TYPE_YML)
 				.accept(TestConfigs.CONTENT_TYPE_YML)
 				.pathParam("id", person.getId())
