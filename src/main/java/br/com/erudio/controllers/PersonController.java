@@ -11,10 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import br.com.erudio.util.MediaType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/person/v1")
@@ -39,8 +40,12 @@ public class PersonController {
             @ApiResponse(description = "Not Found", responseCode = "404", content = @Content),
             @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content)
         })
-    public List<PersonVO> findAll() {
-        return personServices.findAll();
+    public ResponseEntity<Page<PersonVO>> findAll(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "limit", defaultValue = "12") Integer limit) {
+
+        Pageable pageable = PageRequest.of(page, limit);
+        return ResponseEntity.ok(personServices.findAll(pageable));
     }
 
     @GetMapping(value = "/{id}",

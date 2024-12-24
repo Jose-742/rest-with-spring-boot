@@ -13,9 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Slf4j
 @Service
@@ -24,11 +26,13 @@ public class PersonServices {
     @Autowired
     private PersonRepository personRepository;
 
-    public List<PersonVO> findAll() {
-        var persons = DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
-        persons
-              .forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
-        return persons;
+    public Page<PersonVO> findAll(Pageable pageable) {
+
+        var personPage = personRepository.findAll(pageable);
+        var personsVosPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        personsVosPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        return personsVosPage;
     }
 
     public PersonVO findById(Long id){
