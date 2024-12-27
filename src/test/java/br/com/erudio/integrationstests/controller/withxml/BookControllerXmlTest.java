@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
-import java.util.List;
 
+import br.com.erudio.integrationstests.vo.pagedmodels.PagedModelBook;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -188,6 +187,7 @@ public class BookControllerXmlTest extends AbstractIntegrationsTest {
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
                 .accept(TestConfigs.CONTENT_TYPE_XML)
+                .queryParam("page", 0, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
@@ -196,18 +196,18 @@ public class BookControllerXmlTest extends AbstractIntegrationsTest {
                 .body()
                 .asString();
 
-        List<BookVO> books = objectMapper.readValue(content, new TypeReference<List<BookVO>>() {});
-
-        BookVO foundBookOne = books.get(0);
+        PagedModelBook wrapper = objectMapper.readValue(content, PagedModelBook.class);
+        var books = wrapper.getContent();
+        BookVO foundBookOne = books.getFirst();
 
         assertNotNull(foundBookOne.getId());
         assertNotNull(foundBookOne.getTitle());
         assertNotNull(foundBookOne.getAuthor());
         assertNotNull(foundBookOne.getPrice());
         assertTrue(foundBookOne.getId() > 0);
-        assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
-        assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
-        assertEquals(49.00, foundBookOne.getPrice());
+        assertEquals("Big Data: como extrair volume, variedade, velocidade e valor da avalanche de informação cotidiana", foundBookOne.getTitle());
+        assertEquals("Viktor Mayer-Schonberger e Kenneth Kukier", foundBookOne.getAuthor());
+        assertEquals(54.0, foundBookOne.getPrice());
 
         BookVO foundBookFive = books.get(4);
 
@@ -216,9 +216,9 @@ public class BookControllerXmlTest extends AbstractIntegrationsTest {
         assertNotNull(foundBookFive.getAuthor());
         assertNotNull(foundBookFive.getPrice());
         assertTrue(foundBookFive.getId() > 0);
-        assertEquals("Code complete", foundBookFive.getTitle());
-        assertEquals("Steve McConnell", foundBookFive.getAuthor());
-        assertEquals(58.0, foundBookFive.getPrice());
+        assertEquals("Domain Driven Design", foundBookFive.getTitle());
+        assertEquals("Eric Evans", foundBookFive.getAuthor());
+        assertEquals(92.0, foundBookFive.getPrice());
     }
 
 
