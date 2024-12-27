@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -36,6 +35,21 @@ public class PersonServices {
     public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
 
         var personPage = personRepository.findAll(pageable);
+        var personsVosPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        personsVosPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        Link link = linkTo(
+                methodOn(PersonController.class)
+                        .findAll(pageable.getPageNumber(),
+                                pageable.getPageSize(),
+                                "asc")).withSelfRel();
+
+        return assembler.toModel(personsVosPage, link);
+    }
+
+    public PagedModel<EntityModel<PersonVO>> findPersonByName(String firstName,  Pageable pageable) {
+
+        var personPage = personRepository.findPersonByName(firstName, pageable);
         var personsVosPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
         personsVosPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
 
